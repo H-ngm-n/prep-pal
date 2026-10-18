@@ -93,11 +93,15 @@ function pkgDesc(o){
 async function boot(){
   await loadPrices();
   let idx = await Store.listProfiles();
+  if ('serviceWorker' in navigator && location.protocol !== 'file:') navigator.serviceWorker.register('sw.js').catch(()=>{});
+  const onboarded = localStorage.getItem(OB_FLAG), wiz = wizLoad();
+  if (!idx.length && !onboarded) return startWizard('first', wiz);          // brand-new device: first-run wizard (resumes if closed mid-way)
+  if (idx.length && !onboarded) localStorage.setItem(OB_FLAG, '1');       // existing users: migrate silently, never show it
   if (!idx.length){ const p = newProfile('Roman'); p.mealSizes = {mode:'sizes', sizes:{breakfast:'L',lunch:'M',dinner:'H',meal4:'L',meal5:'L',snack:'L'}, pct:[]}; await Store.saveProfile(p); await Store.setActiveId(p.id); idx = [p]; }
   let id = await Store.getActiveId(); if (!idx.find(x => x.id === id)) id = idx[0].id;
   await switchProfile(id);
   if (curPlan()){ TAB = 'week'; render(); }
-  if ('serviceWorker' in navigator && location.protocol !== 'file:') navigator.serviceWorker.register('sw.js').catch(()=>{});
+  if (wiz && wiz.mode !== 'first') startWizard(wiz.mode, wiz);            // resume an unfinished "new profile" / "re-run" wizard
 }
 async function switchProfile(id){
   P = await Store.getProfile(id); await Store.setActiveId(id);
@@ -360,7 +364,8 @@ function renderMore(){
    ${it('setup','⚙️','Plan setup','Targets, budget, foods, stores and units')}
    ${it('prep','🔪','Prep plan','Batch-cooking order and portioning')}
    ${it('reuse','♻️','Reuse & leftovers','Shared ingredients and how to use extras')}
-   ${it('','👥','Profiles','Switch, add, export or import',`profiles`)}</div>
+   ${it('','👥','Profiles','Switch, add, export or import',`profiles`)}
+   ${it('','🧭','Re-run setup','Walk through the setup steps again for this profile',`wizrerun`)}</div>
    <div class="note" style="margin-top:12px">🔒 Your data stays on your device.</div></div>`;
 }
 function macroChips(m, extra=''){
@@ -388,7 +393,7 @@ document.addEventListener('click', async e => {
   if (a === 'profiles') return profilesDialog();
   if (a === 'close') return $('#dlg').close();
   if (a === 'pswitch'){ $('#dlg').close(); return switchProfile(id); }
-  if (a === 'pnew'){ const n = prompt('Name for the new profile?'); if (!n) return; const p = newProfile(n.trim()); await Store.saveProfile(p); $('#dlg').close(); TAB='setup'; return switchProfile(p.id); }
+  if (a === 'pnew'){ $('#dlg').close(); return startWizard('new'); }
   if (a === 'prename'){ const p = await Store.getProfile(id), n = prompt('Rename profile', p.name); if (!n) return; p.name = n.trim(); await Store.saveProfile(p); if (id === P.id){ P.name = p.name; $('#profileName').textContent = p.name; } return profilesDialog(); }
   if (a === 'pdelete'){ const idx = await Store.listProfiles(); if (idx.length < 2) return alert('Keep at least one profile.'); if (!confirm('Delete this profile and all its plans from this device?')) return;
     await Store.deleteProfile(id); if (id === P.id) await switchProfile((await Store.listProfiles())[0].id); return profilesDialog(); }

@@ -7,7 +7,7 @@ const ACT = [
   ['athlete', 1.9, 'Athlete', 'Twice-a-day training or heavy physical labor']];
 const PACES = [['-1.5','Lose 1.5 lb/week'],['-1','Lose 1 lb/week'],['-0.5','Lose 0.5 lb/week'],['0','Maintain'],['0.25','Gain 0.25 lb/week'],['0.5','Gain 0.5 lb/week']];
 const LB = 0.45359237;
-const imperial = () => (P.units || 'both') !== 'g';
+const imperial = () => ((P && P.units) || 'both') !== 'g';
 function bodyInit(){ P.body = P.body || { sex:'male', age:30, heightCm:177.8, weightKg:90.7, goalKg:81.6, activity:'moderate', liftDays:0, pace:'-1', bodyFat:'' }; P.weights = P.weights || []; }
 
 function calcMacros(b){
