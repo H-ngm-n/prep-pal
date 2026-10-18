@@ -1,6 +1,7 @@
 // Planning engine: recipe selection, per-day macro fitting, shopping/cost, prep, reuse.
 const DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 const RBY = Object.fromEntries(RECIPES.map(r => [r.id, r]));
+const BUILTIN_IDS = new Set(RECIPES.map(r => r.id));
 const norm = s => s.toLowerCase().trim().replace(/(es|s)$/,'');
 const terms = s => (s||'').split(/[,;\n]/).map(norm).filter(Boolean);
 const ALG_WORDS = {dairy:'dairy',milk:'dairy',lactose:'dairy',egg:'egg',peanut:'peanut',nut:'treenut','tree nut':'treenut',almond:'treenut',fish:'fish',seafood:'fish',gluten:'gluten',wheat:'gluten',soy:'soy'};
@@ -91,20 +92,26 @@ function scoreRecipe(r, prof, picked, prices, rnd){
   sc -= cps*1.5;
   const lastDay = prof.prepStyle==='sunwed' ? 4 : 7;
   if (r.fridge < lastDay && !r.freezer) sc -= prof.prepStyle==='sunwed' ? 1 : 3;
-  return sc + rnd()*0.6;
+  if (AVOID.has(r.id)) sc -= 3;
+  return sc + rnd()*JITTER;
 }
+let JITTER = 0.6, AVOID = new Set();
 function rng(seed){ let x=seed>>>0||1; return ()=>((x=(x*1664525+1013904223)>>>0)/4294967296); }
 
-function pickSelection(prof, prices, seed){
-  const rnd=rng(seed), slots=slotsFor(prof), pool=RECIPES.filter(r=>allowed(r,prof));
+const inPool = (r, prof) => allowed(r, prof) && !(r.mine && r.usePlans === false);
+function pickSelection(prof, prices, seed, locked){
+  const rnd=rng(seed), slots=slotsFor(prof), pool=RECIPES.filter(r=>inPool(r,prof));
   const need={breakfast:slots.some(s=>s.type==='breakfast')?1:0, main:+prof.variety, snack:Math.min(2,slots.filter(s=>s.type==='snack').length)};
   const sel={breakfast:[],main:[],snack:[]}, picked=[];
-  for (const type of ['main','breakfast','snack']) for (let i=0;i<need[type];i++){
+  // pinned custom recipes ("always include") and locked recipes go in first
+  pool.filter(r => (r.mine && r.pin) || (locked||[]).includes(r.id)).forEach(r => { if (sel[r.type].length < need[r.type]){ sel[r.type].push(r.id); picked.push(r); } });
+  for (const type of ['main','breakfast','snack']) while (sel[type].length < need[type]){
     const c=pool.filter(r=>r.type===type && !picked.includes(r)); if(!c.length) break;
-    c.sort((a,b)=>scoreRecipe(b,prof,picked,prices,rnd)-scoreRecipe(a,prof,picked,prices,rnd));
+    const sc=new Map(c.map(r=>[r,scoreRecipe(r,prof,picked,prices,rnd)])); c.sort((a,b)=>sc.get(b)-sc.get(a));
     sel[type].push(c[0].id); picked.push(c[0]); }
   return sel;
 }
+const selKey = sel => Object.values(sel).flat().slice().sort().join(',');
 
 function buildPlan(prof, prices, sel){
   const T=targetsOf(prof.targets), slots=slotsFor(prof), serv=+prof.servings||1;
@@ -127,7 +134,7 @@ function buildPlan(prof, prices, sel){
   for (const [id,g] of Object.entries(need)){
     const fromPantry=Math.min(g,pantry[id]||0), buyG=g-fromPantry;
     if (buyG<=0){ lines.push({id,need:g,fromPantry,buy:null,cost:0,left:(pantry[id]||0)-g}); continue; }
-    const b=bestBuy(id,buyG,prices,prof.stores);
+    const b=bestBuy(id,buyG,prices,[...prof.stores,'Your price']);
     if(!b){ lines.push({id,need:g,fromPantry,buy:null,cost:0,left:0,missing:true}); continue; }
     total+=b.cost; lines.push({id,need:g,fromPantry,buy:b,cost:b.cost,left:b.n*b.o.package_grams-buyG});
   }
@@ -136,20 +143,25 @@ function buildPlan(prof, prices, sel){
     shares,stores:prof.stores,budget:+prof.budget,prepStyle:prof.prepStyle,acc,createdAt:new Date().toISOString()};
 }
 
-function generate(prof, prices, seed, fixedSel){
+// opts: {locked:[ids], avoidKey:selKey of the previous plan, explore:true for Regenerate}
+function generate(prof, prices, seed, fixedSel, opts={}){
   if (fixedSel) return buildPlan(prof,prices,fixedSel);
-  let best=null;
-  for (let k=0;k<6;k++){ const p=generateOne(prof,prices,seed*7+k);
-    if (p.total<=p.budget) return p; if(!best||p.total<best.total) best=p; }
-  return best;
+  JITTER = opts.explore ? 6 : 0.6; AVOID = new Set(opts.explore ? (opts.prevIds||[]) : []);
+  let best=null, bestSame=null;
+  try {
+    for (let k=0;k<10;k++){ const p=generateOne(prof,prices,seed*7+k,opts.locked||[]);
+      if (opts.avoidKey && selKey(p.sel)===opts.avoidKey){ if(!bestSame) bestSame=p; continue; }
+      if (p.total<=p.budget) return p; if(!best||p.total<best.total) best=p; }
+  } finally { JITTER = 0.6; AVOID = new Set(); }
+  return best || bestSame;
 }
-function generateOne(prof, prices, seed){
-  let sel=pickSelection(prof,prices,seed), plan=buildPlan(prof,prices,sel);
-  // budget repair: greedy swaps that lower cost while over budget
-  const pool=RECIPES.filter(r=>allowed(r,prof));
+function generateOne(prof, prices, seed, locked){
+  let sel=pickSelection(prof,prices,seed,locked), plan=buildPlan(prof,prices,sel);
+  const fixed=new Set(RECIPES.filter(r=>(r.mine&&r.pin)||locked.includes(r.id)).map(r=>r.id));
+  const pool=RECIPES.filter(r=>inPool(r,prof) && !AVOID.has(r.id));
   for (let it=0; it<12 && plan.total>plan.budget; it++){
     let best=null;
-    for (const type of ['main','breakfast','snack']) sel[type].forEach((id,ix)=>{
+    for (const type of ['main','breakfast','snack']) sel[type].forEach((id,ix)=>{ if (fixed.has(id)) return;
       pool.filter(r=>r.type===type && !Object.values(sel).flat().includes(r.id)).forEach(r=>{
         const s2=JSON.parse(JSON.stringify(sel)); s2[type][ix]=r.id; const p2=buildPlan(prof,prices,s2);
         if (p2.total<(best?best.total:plan.total)-0.01) best=p2; }); });

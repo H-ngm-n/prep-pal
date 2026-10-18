@@ -11,7 +11,7 @@ function newProfile(name){
     targets: { mode: 'manual', kcal: 2400, protein: 190, carbs: 250, fat: 70 },
     mealsPerDay: 4, snacks: false, servings: 1, budget: 75, likes: '', dislikes: '', allergies: '',
     stores: ['Aldi', 'Kroger', 'Meijer'], prepStyle: 'sunday', variety: 3,
-    mealSizes: {mode:'sizes', sizes:{}, pct:[]}, units: 'both', pantry: {}, log: [], foods: {}, recent: [], current: null, plans: [], checks: {}, ui: { hideChecked: false, groupBy: 'section' } };
+    myRecipes: [], customIngs: {}, locks: [], history: [], mealSizes: {mode:'sizes', sizes:{}, pct:[]}, units: 'both', pantry: {}, log: [], foods: {}, recent: [], current: null, plans: [], checks: {}, ui: { hideChecked: false, groupBy: 'section' } };
 }
 async function save(){ await Store.saveProfile(P); }
 
@@ -26,6 +26,9 @@ async function buildPriceRows(){
   let rows = BASE_PRICES.slice();
   for (const ch of P.stores) if (KROGER_FAMILY.includes(ch) && ch !== 'Kroger')
     rows = rows.concat(BASE_PRICES.filter(r => r.store === 'Kroger').map(r => ({...r, store: ch, product: r.product.replace(/^Kroger/, ch + ' (Kroger brand)')})));
+  // user-entered prices for custom ingredients (kept in the profile, never in prices.json)
+  Object.entries(P.customIngs || {}).forEach(([id, ci]) => { if (ci.price > 0 && ci.pkgG > 0)
+    rows.push({item_id:id, store:'Your price', product:ci.name, package_size:ci.pkgLabel || (Math.round(ci.pkgG)+' g'), package_grams:+ci.pkgG, price:+ci.price, package_noun:'pack', estimated:false, user:true, aisle:null, last_updated:'you'}); });
   for (const ch of P.stores){
     const prov = CHAIN_PROVIDER(ch), loc = P.locations[ch];
     if (!prov.live || !loc || !loc.locationId) continue;
@@ -99,6 +102,8 @@ async function boot(){
 async function switchProfile(id){
   P = await Store.getProfile(id); await Store.setActiveId(id);
   P.ui = P.ui || { hideChecked:false, groupBy:'section' }; P.checks = P.checks || {}; P.locations = P.locations || {};
+  P.myRecipes = P.myRecipes || []; P.customIngs = P.customIngs || {}; P.locks = P.locks || []; P.history = P.history || [];
+  applyCustom();
   $('#profileName').textContent = P.name;
   await buildPriceRows();
   $('#sub').textContent = 'Budget macro meal prep' + (P.zip ? ' · ZIP ' + P.zip : '');
@@ -134,10 +139,14 @@ async function importProfile(text){
 
 // ---------- plan ----------
 function curPlan(){ return P.current && P.current.plan; }
-async function makePlan(fixedSel, newSeed){
+async function makePlan(fixedSel, newSeed, explore){
   if (!P.stores.length){ alert('Pick at least one store.'); return; }
+  applyCustom();
   const seed = newSeed || (P.current && P.current.seed) || 1;
-  const plan = generate(P, PRICES, seed, fixedSel);
+  P.locks = (P.locks || []).filter(id => RBY[id]);
+  const prev = curPlan();
+  const plan = generate(P, PRICES, seed, fixedSel, { locked: P.locks, avoidKey: explore && prev ? selKey(prev.sel) : null, prevIds: [prev, ...(P.history||[]).slice(0,2).map(h=>h.plan)].filter(Boolean).flatMap(p => Object.values(p.sel).flat()), explore });
+  if (P.current) { P.history = [P.current, ...(P.history || [])].slice(0, 10); }
   P.current = { planId: uid(), seed, plan };
   await save(); render();
 }
@@ -148,7 +157,7 @@ function render(){
   const navTab = ['setup','macros','prep','reuse','more'].includes(TAB) ? 'more' : TAB;
   document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === navTab));
   const plan = curPlan();
-  if (!['setup','log','macros','more'].includes(TAB) && !plan){ main().innerHTML = `<div class="card"><h2>No plan yet</h2><p>Fill in Setup and tap <b>Generate plan</b>.</p><button class="btn" data-tab="setup">Go to Setup</button></div>`; return; }
+  if (!['setup','log','macros','more','recipes'].includes(TAB) && !plan){ main().innerHTML = `<div class="card"><h2>No plan yet</h2><p>Fill in Setup and tap <b>Generate plan</b>.</p><button class="btn" data-tab="setup">Go to Setup</button></div>`; return; }
   main().innerHTML = ({setup:renderSetup, week:renderWeek, shop:renderShop, prep:renderPrep, recipes:renderRecipes, reuse:renderReuse, log:renderLog, macros:renderMacros, more:renderMore})[TAB](plan);
 }
 
@@ -211,8 +220,11 @@ async function chooseLocation(ch){
 function pct(x){ const v = x*100, c = Math.abs(v) <= 5 ? 'ok' : Math.abs(v) <= 10 ? 'mid' : 'bad'; return `<span class="${c}">${v>=0?'+':''}${v.toFixed(1)}%</span>`; }
 function renderWeek(plan){
   const sel = plan.sel, alts = type => RECIPES.filter(r => r.type === type && allowed(r, P)), used = Object.values(sel).flat();
-  const rows = ['breakfast','main','snack'].flatMap(type => (sel[type]||[]).map((id, ix) => `<div class="line"><div class="ltitle">${esc(RBY[id].name)}</div><div class="sub">${type === 'main' ? 'Lunch / dinner' : type[0].toUpperCase()+type.slice(1)}</div>
-    <details class="swap"><summary class="btn sm sec">Swap</summary><select data-act="swap" data-type="${type}" data-ix="${ix}" aria-label="Swap ${esc(RBY[id].name)}"><option value="">Choose a replacement…</option>${alts(type).filter(r=>!used.includes(r.id)).map(r=>`<option value="${r.id}">${esc(r.name)}</option>`).join('')}</select></details></div>`)).join('');
+  const rows = ['breakfast','main','snack'].flatMap(type => (sel[type]||[]).map((id, ix) => { const locked = (P.locks||[]).includes(id);
+    return `<div class="line"><div class="ltitle">${esc(RBY[id].name)} ${RBY[id].mine?'<span class="mine">Mine</span>':''} ${RBY[id].pin?'📌':''}</div><div class="sub">${type === 'main' ? 'Lunch / dinner' : type[0].toUpperCase()+type.slice(1)}${locked?' · locked':''}</div>
+    <div class="btns" style="margin-top:8px"><button class="btn sm ${locked?'':'sec'}" data-act="lock" data-id="${id}" aria-pressed="${locked}" aria-label="${locked?'Unlock':'Lock'} ${esc(RBY[id].name)}">${locked?'🔒 Locked':'🔓 Lock'}</button>
+    <button class="btn sm sec" data-act="slotregen" data-type="${type}" data-ix="${ix}" ${locked?'disabled':''}>🎲 Different one</button></div>
+    <details class="swap"><summary class="btn sm sec">Pick a specific one</summary><select data-act="swap" data-type="${type}" data-ix="${ix}" aria-label="Swap ${esc(RBY[id].name)}"><option value="">Choose a replacement…</option>${alts(type).filter(r=>!used.includes(r.id) && !(r.mine && r.usePlans===false)).map(r=>`<option value="${r.id}">${esc(r.name)}${r.mine?' (Mine)':''}</option>`).join('')}</select></details></div>`; })).join('');
   const T = plan.T, over = plan.total > plan.budget;
   const days = plan.days.map((d, di) => `<div class="card day"><h2>${d.day}</h2>${d.meals.map((m, mi) => { const r = RBY[m.recipe], g = m.ing.reduce((a,i)=>a+i.g,0);
     const mains = m.ing.filter(i => i.role !== 'x').map(i => ING[i.id].name.split(',')[0].toLowerCase()).slice(0,3).join(', ');
@@ -223,8 +235,8 @@ function renderWeek(plan){
   return `<h1 class="screen">Week plan</h1>
    <div class="card"><div class="sum"><div><span class="sub">Daily target</span><b>${T.kcal} kcal</b></div><div><span class="sub">Weekly cost</span><b class="${over?'bad':''}">${money(plan.total)}</b><span class="sub">${over ? 'over ' + money(plan.total-plan.budget) : 'of ' + money(plan.budget) + ' ✓'}</span></div></div>
    ${macroChips({kcal:T.kcal,p:T.p,c:T.c,f:T.f})}
-   <details class="more"><summary>This week's recipes (${used.length}) · swap</summary>${rows}</details>
-   <div class="btns"><button class="btn sec" data-act="regen">🔄 Regenerate</button><button class="btn" data-act="saveplan">💾 Save plan</button></div>
+   <details class="more" open><summary>This week's recipes (${used.length})</summary>${rows}</details>
+   <div class="btns"><button class="btn sec" data-act="regen">🔄 Regenerate week</button><button class="btn sec" data-act="undo" ${(P.history||[]).length?'':'disabled'}>↩️ Previous plan${(P.history||[]).length?` (${P.history.length})`:''}</button></div><div class="btns" style="margin-top:10px"><button class="btn" data-act="saveplan">💾 Save plan</button></div>
    <p class="sub">Portion amounts are raw/dry weights${plan.serv>1?`, per person (×${plan.serv} people)`:''}.</p></div>
    ${days}${renderSaved()}`;
 }
@@ -238,7 +250,7 @@ function renderSaved(){
 function shopModel(plan){
   const ck = checksOf(), stores = {};
   plan.lines.forEach(l => {
-    const st = l.buy ? l.buy.o.store : (l.missing ? 'Not available at selected stores' : 'From your pantry');
+    const st = l.buy ? l.buy.o.store : (l.missing ? (isCustomIng(l.id) ? 'Price unknown (your ingredients)' : 'Not available at selected stores') : 'From your pantry');
     (stores[st] = stores[st] || []).push(l);
   });
   let have = 0, cart = 0;
@@ -250,11 +262,12 @@ function checkBtns(id, ck, small){
 }
 function itemRow(l, ck){
   const o = l.buy && l.buy.o, aisle = o && o.aisle ? `${esc(o.aisle)} · ` : '';
-  const head = o ? buyHeadline(l) : (l.missing ? 'Not stocked at your stores' : 'Use from pantry');
+  const head = o ? buyHeadline(l) : (l.missing ? (isCustomIng(l.id) ? 'Price unknown' : 'Not stocked at your stores') : 'Use from pantry');
   return `<div class="item ${ck[l.id]||''}"><div class="top2"><span class="buy">${esc(head)}</span><span class="lt">${o ? money(l.cost) : '—'}</span></div>
    <div class="nm">${esc(ING[l.id].name)}</div>
    ${o ? `<div class="sub">${aisle}${esc(pkgDesc(o))}</div>` : ''}
    <details class="more"><summary>Details</summary><div class="sub">${o ? `${l.buy.n} × ${money(o.price)}${o.package_noun==='lb'?'/lb':''} · ${o.live?'live price':'<span class="est">estimated</span>'}<br>` : ''}Need ${W(l.need)}${l.fromPantry ? `<br>${W(l.fromPantry)} from pantry` : ''}${l.left > 5 ? `<br>Leftover ${W(l.left)}` : ''}</div></details>
+   ${isCustomIng(l.id) ? `<button class="btn sm sec" data-act="setprice" data-id="${l.id}" style="margin-top:8px">${o ? 'Edit my price' : 'Add my price'}</button>` : ''}
    ${checkBtns(l.id, ck)}</div>`;
 }
 function renderShop(plan){
@@ -307,18 +320,23 @@ function renderPrep(plan){
 
 // ----- recipes -----
 function recipeCard(r, inPlan, plan){
-  const m = recipeServingMacros(r), ck = checksOf(), shop = new Set(plan.lines.map(l => l.id));
-  const cps = r.ing.reduce((a,[id,g]) => a + g/r.servings*cheapestPerGram(id, PRICES, P.stores), 0);
-  return `<details ${inPlan?'open':''}><summary><span>${inPlan?'⭐ ':''}${esc(r.name)}</span><span class="muted">${r.type}</span></summary>
-   <div class="muted" style="margin-top:6px">Per serving (default portion, ¼ of batch):</div>${macroChips(m, `<span>≈${money(cps)}/serving</span>`)}
-   <p class="muted">Prep ${r.prep} min · Cook ${r.cook} min · Fridge ${r.fridge} days · ${r.freezer?'Freezer-friendly ❄️':'Not for freezing'} · Base batch: ${r.servings} servings</p>
-   <h3>Ingredients (base batch)</h3>${r.ing.map(([id,g]) => `<div class="ri"><span>${friendly(id,g)} ${esc(ING[id].name)}</span>${inPlan && shop.has(id) ? checkBtns(id, ck, true) : ''}</div>`).join('')}
+  const m = recipeServingMacros(r), ck = checksOf(), shop = new Set(plan ? plan.lines.map(l => l.id) : []);
+  const cps = r.ing.reduce((a,[id,g]) => a + g/r.servings*cheapestPerGram(id, PRICES, [...P.stores,'Your price']), 0);
+  const unknown = r.ing.some(([id]) => isCustomIng(id) && !(P.customIngs[id] && P.customIngs[id].price));
+  return `<details ${inPlan?'open':''} id="rc-${r.id}"><summary><span>${inPlan?'⭐ ':''}${esc(r.name)} ${r.mine?'<span class="mine">Mine</span>':''}</span><span class="muted">${r.mine ? esc((r.types||[]).join(', ')) : r.type}</span></summary>
+   <div class="muted" style="margin-top:6px">Per serving (1 of ${r.servings}):</div>${macroChips(m, `<span>≈${money(cps)}${unknown?'+':''}/serving</span>`)}
+   <p class="muted">${r.prep?`Prep ${r.prep} min · `:''}${r.cook?`Cook ${r.cook} min · `:''}Fridge ${r.fridge} days · ${r.freezer?'Freezer-friendly ❄️':'Not for freezing'} · Batch makes ${r.servings} servings${r.cookedWeight?` · cooked ${W(r.cookedWeight)}`:''}${r.tags&&r.tags.length?' · '+r.tags.map(esc).join(', '):''}</p>
+   <div class="btns"><button class="btn sm" data-act="rlog" data-id="${r.id}">🍽️ Log a serving</button>${r.mine ? `<button class="btn sm sec" data-act="redit" data-id="${r.id}">Edit</button>` : ''}<button class="btn sm sec" data-act="rdup" data-id="${r.id}">Duplicate${r.mine?'':' to Mine'}</button>${r.mine ? `<button class="btn sm warn" data-act="rdel" data-id="${r.id}">Delete</button>` : ''}</div>
+   ${r.mine ? `<div class="chips" style="margin-top:12px"><button class="chip ${r.usePlans!==false?'on':''}" data-act="ruse" data-id="${r.id}">${r.usePlans!==false?'✓ ':''}Use in my meal plans</button><button class="chip ${r.pin?'on':''}" data-act="rpin" data-id="${r.id}">${r.pin?'📌 ':''}Always include this week</button></div>` : ''}
+   <h3>Ingredients (whole batch)</h3>${r.ing.map(([id,g]) => `<div class="ri"><span>${friendly(id,g)} ${esc(ING[id].name)}</span>${inPlan && shop.has(id) ? checkBtns(id, ck, true) : ''}</div>`).join('')}
    <h3>Steps</h3><ol class="steps">${r.steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol>${!allowed(r,P)?'<div class="warnnote">Excluded by your dislikes or allergies.</div>':''}</details>`;
 }
 function renderRecipes(plan){
-  const ids = new Set(Object.values(plan.sel).flat());
-  return `<h1 class="screen">Recipes</h1><div class="card"><h2>This week's recipes</h2><p class="muted">Check items off here or in Shop. Both stay in sync.</p>${RECIPES.filter(r=>ids.has(r.id)).map(r=>recipeCard(r,true,plan)).join('')}</div>
-   <div class="card"><h2>Recipe library (${RECIPES.length})</h2>${RECIPES.filter(r=>!ids.has(r.id)).map(r=>recipeCard(r,false,plan)).join('')}</div>`;
+  const ids = new Set(plan ? Object.values(plan.sel).flat() : []), mine = RECIPES.filter(r => r.mine);
+  return `<h1 class="screen">Recipes</h1>
+   <div class="card"><h2>My recipes (${mine.length})</h2><button class="btn" data-act="rnew">➕ New recipe</button>${mine.map(r=>recipeCard(r, ids.has(r.id), plan)).join('') || '<p class="sub" style="margin-top:12px">Add your own recipes. They can go into your plans and your log.</p>'}</div>
+   ${plan ? `<div class="card"><h2>This week's recipes</h2><p class="muted">Check items off here or in Shop. Both stay in sync.</p>${RECIPES.filter(r=>ids.has(r.id) && !r.mine).map(r=>recipeCard(r,true,plan)).join('')}</div>` : ''}
+   <div class="card"><h2>Recipe library (${RECIPES.filter(r=>!r.mine).length})</h2>${RECIPES.filter(r=>!ids.has(r.id) && !r.mine).map(r=>recipeCard(r,false,plan)).join('')}</div>`;
 }
 
 // ----- reuse -----
@@ -387,7 +405,15 @@ document.addEventListener('click', async e => {
   if (a === 'setloc'){ P.locations[t.dataset.ch] = JSON.parse(t.dataset.loc); await save(); $('#dlg').close(); await buildPriceRows(); return render(); }
   if (a === 'setlocnote'){ const n = $('#locNote').value.trim(); if (n) P.locations[t.dataset.ch] = {name:n, locationId:null}; else delete P.locations[t.dataset.ch]; await save(); $('#dlg').close(); return render(); }
   if (a === 'generate'){ readSetup(); await save(); $('#sub').textContent = 'Budget macro meal prep · ZIP ' + P.zip; await buildPriceRows(); await makePlan(null, (P.current&&P.current.seed)||1); TAB = 'week'; render(); scrollTo(0,0); return toast('Plan ready'); }
-  if (a === 'regen'){ await makePlan(null, Math.floor(Math.random()*1e6)+2); return toast('New plan'); }
+  if (a === 'regen'){ await makePlan(null, Math.floor(Math.random()*1e9)+2, true); return toast('New plan'); }
+  if (a === 'lock'){ P.locks = (P.locks||[]).includes(id) ? P.locks.filter(x=>x!==id) : [...(P.locks||[]), id]; await save(); const y=scrollY; render(); scrollTo(0,y); return; }
+  if (a === 'slotregen'){ const plan = curPlan(), sel = JSON.parse(JSON.stringify(plan.sel)), type = t.dataset.type, ix = +t.dataset.ix, cur = sel[type][ix];
+    const recent = new Set([cur, ...(P.history||[]).slice(0,3).map(h => h.plan.sel[type] && h.plan.sel[type][ix])]);
+    let opts = RECIPES.filter(r => r.type === type && inPool(r, P) && !Object.values(sel).flat().includes(r.id));
+    if (!opts.length) return toast('No other recipes fit');
+    const fresh = opts.filter(r => !recent.has(r.id)); if (fresh.length) opts = fresh;
+    sel[type][ix] = opts[Math.floor(Math.random()*opts.length)].id; const y=scrollY; await makePlan(sel); scrollTo(0,y); return toast('Swapped in ' + RBY[sel[type][ix]].name); }
+  if (a === 'undo'){ const h = (P.history||[]).shift(); if (!h) return; P.current = h; await save(); const y=scrollY; render(); scrollTo(0,y); return toast('Back to previous plan'); }
   if (a === 'saveplan'){ const n = prompt('Name this plan', 'Week of ' + new Date().toLocaleDateString()); if (!n) return;
     const plan = curPlan(); P.plans.unshift({id:P.current.planId, name:n, savedAt:new Date().toISOString(), plan, seed:P.current.seed});
     const pantry = {}; plan.lines.forEach(l => { const i = ING[l.id]; if (l.left > 5 && (i.shelf >= 14 || i.freeze)) pantry[l.id] = l.left; }); P.pantry = pantry;

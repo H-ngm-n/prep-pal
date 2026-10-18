@@ -25,7 +25,7 @@ function renderLog(){
    <div class="note">🔒 Your log stays on this device, in ${esc(P.name)}'s profile. Only barcode lookups go to Open Food Facts.</div></div>
    <div class="card"><h2>Add food</h2><button class="btn" data-act="logscan">📷 Scan barcode</button>
    <label>Or type the barcode</label><div style="display:flex;gap:8px"><input id="barcode" inputmode="numeric" placeholder="e.g. 737628064502"><button class="btn sm" data-act="loglookup">Look up</button></div>
-   <div class="btns" style="margin-top:10px"><button class="btn sec" data-act="logcustom">✍️ Custom food</button>${curPlan() ? `<button class="btn sec" data-act="logplanned">📅 Log planned meals</button>` : ''}</div>
+   <div class="btns" style="margin-top:10px"><button class="btn sec" data-act="logcustom">✍️ Custom food</button><button class="btn sec" data-act="rpick">📖 My recipes</button>${curPlan() ? `<button class="btn sec" data-act="logplanned">📅 Log planned meals</button>` : ''}</div>
    ${recent.length ? `<h3>Recent</h3><div class="chips">${recent.map(f => `<button class="chip" data-act="logrecent" data-id="${esc(f.key)}">${esc(f.name)}</button>`).join('')}</div>` : ''}</div>
    <div class="card"><h2>${LOG_DATE === todayStr() ? 'Today' : LOG_DATE}</h2>${meals}</div>`;
 }
@@ -61,7 +61,8 @@ function foodDialog(food, entry){
     <table class="tbl" style="margin-top:10px"><tr><th></th><th>kcal</th><th>P</th><th>C</th><th>F</th></tr>${row('Per 100 g', f)}${per ? row('Per serving', per) : ''}</table>
     <p class="muted">Source: ${esc(food.source || 'Custom')}</p>
     <div class="row"><div><label>Amount</label><input id="lqty" type="number" inputmode="decimal" step="any" value="${q0}"></div>
-    <div><label>Unit</label><select id="lunit"><option value="g">grams</option><option value="oz">ounces</option>${sg ? '<option value="serving">servings</option>' : ''}</select></div></div>
+    <div><label>Unit</label><select id="lunit">${food.servingsOnly ? '' : '<option value="g">grams</option><option value="oz">ounces</option>'}${sg ? '<option value="serving">servings</option>' : ''}</select></div></div>
+    ${food.servingsOnly ? '<p class="sub">Add the total cooked weight to the recipe to log by grams.</p>' : ''}
     <div class="row"><div><label>Meal</label><select id="lmeal">${LOG_MEALS.map(m => `<option ${((entry && entry.meal) || guessMeal()) === m ? 'selected' : ''}>${m}</option>`).join('')}</select></div>
     <div><label>Date</label><input id="ldate" type="date" value="${entry ? entry.date : LOG_DATE}"></div></div>
     <div id="lprev" class="note"></div>
