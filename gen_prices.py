@@ -1,3 +1,8 @@
+# LEGACY SEED SCRIPT. DO NOT RERUN.
+# prices.json is now the canonical source of truth. Rows are hand-verified from public store pages
+# (estimated=false + exact source_url) and refreshed in place each week. Rerunning this script would
+# overwrite the verified prices with synthetic estimates. It is kept only to document how the
+# original 2026-10-18 estimates were generated.
 import json,hashlib
 # item: (kroger product, size_label, grams, kroger_price, unit_kind)
 B={
