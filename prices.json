@@ -1,6 +1,6 @@
 {
  "region": "Plymouth, MI 48170",
- "note": "Mixed. Refreshed 2026-11-13 from public pages only (no logins). last_updated shows the day each row was last checked. Aldi: 43 rows re-verified 2026-11-13 on aldi.us for ALDI Canton (42053 Ford Rd); these match the Oct 30 shelf prices (the Nov 6 values were ~10% higher). Trader Joe's: 14 rows re-verified 2026-11-13 via traderjoes.com search listings for Northville #667 (prices unchanged); other rows keep prior dates. Meijer: meijer.com blocks automated access; 3 rows updated 2026-11-13 from the Flipp/Wishabi weekly ad for Plymouth 48170; other Meijer rows keep prior verified dates. Kroger: kroger.com blocked; 6 rows updated 2026-11-13 from the Flipp Kroger weekly ad (ad prices usually require a Kroger Card). Remaining Kroger rows stay estimated.",
+ "note": "Mixed. Refreshed 2026-11-20 from public pages only (no logins). last_updated shows the day each row was last checked. Aldi: 43 rows re-verified 2026-11-20 on aldi.us for ALDI Canton (42053 Ford Rd); prices unchanged vs Nov 13. Trader Joe's: 12 rows re-verified 2026-11-20 via traderjoes.com search listings for Northville #667 (prices unchanged); other rows keep prior dates. Meijer: meijer.com blocks automated access (Access Denied after the first page); 1 row (chicken breast) re-verified on its product page and 1 row (sweet potatoes) updated from the Flipp/Wishabi weekly ad for Plymouth 48170; other Meijer rows keep prior verified dates. Kroger: kroger.com blocked and no Flipp ad matched the existing Kroger rows this week, so Kroger rows keep their prior dates (unverified ones remain estimated).",
  "prices": [
   {
    "item_id": "chicken_breast",
@@ -15,7 +15,7 @@
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.aldi.us/store/aldi/products/19554637-fresh-family-pack-chicken-breasts-per-lb"
   },
@@ -49,7 +49,7 @@
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-10-23",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.meijer.com/shopping/product/meijer-100-all-natural-boneless-skinless-chicken-breasts-family-pack/24061500000"
   },
@@ -83,7 +83,7 @@
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.aldi.us/store/aldi/products/30538621-fresh-family-pack-boneless-skinless-chicken-thighs-1-each"
   },
@@ -151,7 +151,7 @@
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.aldi.us/store/aldi/products/17499020-fit-active-93-lean-fresh-ground-turkey-19-2-oz"
   },
@@ -219,7 +219,7 @@
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.aldi.us/store/aldi/products/19507513-85-lean-ground-beef-chub-16-oz"
   },
@@ -287,7 +287,7 @@
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.aldi.us/store/aldi/products/115250-northern-catch-chunk-tuna-in-water-5-oz"
   },
@@ -423,7 +423,7 @@
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.aldi.us/store/aldi/products/20383668-fremont-fish-market-tilapia-fillets-value-pack-32-oz"
   },
@@ -474,7 +474,7 @@
    "count_per_package": 12,
    "count_noun": "egg",
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.aldi.us/store/aldi/products/25928369-goldhen-grade-a-cage-free-large-white-eggs-12-ct"
   },
@@ -542,7 +542,7 @@
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.aldi.us/store/aldi/products/21298195-goldhen-cage-free-liquid-egg-whites-32-oz"
   },
@@ -593,7 +593,7 @@
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.aldi.us/store/aldi/products/20249671-friendly-farms-nonfat-plain-greek-yogurt-32-oz"
   },
@@ -644,7 +644,7 @@
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.traderjoes.com/home/products/pdp/greek-nonfat-yogurt-plain-086450"
   },
@@ -661,7 +661,7 @@
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.aldi.us/store/aldi/products/18647611-friendly-farms-low-fat-cottage-cheese-24-oz"
   },
@@ -729,7 +729,7 @@
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.aldi.us/store/aldi/products/19335029-happy-farms-shredded-mild-cheddar-cheese-16-oz"
   },
@@ -797,7 +797,7 @@
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.aldi.us/store/aldi/products/19274374-happy-farms-shredded-low-moisture-part-skim-mozzarella-cheese-32-oz"
   },
@@ -848,7 +848,7 @@
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.traderjoes.com/home/products/pdp/shredded-mozzarella-cheese-081085"
   },
@@ -865,7 +865,7 @@
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.aldi.us/store/aldi/products/20989941-friendly-farms-1-milk-0-5-gal"
   },
@@ -933,7 +933,7 @@
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.aldi.us/store/aldi/products/133421074-elevation-protein-powder-vanilla-2-lb"
   },
@@ -984,7 +984,7 @@
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.aldi.us/store/aldi/products/128146090-aldi-black-beans-15-oz"
   },
@@ -1035,7 +1035,7 @@
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.traderjoes.com/home/products/pdp/black-beans-009636"
   },
@@ -1045,14 +1045,14 @@
    "product": "Aldi Garbanzo beans",
    "package_size": "15.5 oz",
    "package_grams": 439,
-   "price": 0.85,
-   "unit_price": 0.055,
+   "price": 0.16,
+   "unit_price": 0.01,
    "unit": "per oz",
    "package_noun": "can",
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.aldi.us/store/aldi/products/128145981-aldi-garbanzo-beans-155-oz"
   },
@@ -1103,7 +1103,7 @@
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.traderjoes.com/home/products/pdp/organic-garbanzo-beans-050261"
   },
@@ -1171,7 +1171,7 @@
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.traderjoes.com/home/search?q=lentils&section=products"
   },
@@ -1188,7 +1188,7 @@
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.aldi.us/store/aldi/products/20968019-earthly-grains-long-grain-white-rice-3-lb"
   },
@@ -1256,7 +1256,7 @@
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.aldi.us/store/aldi/products/18648329-simply-nature-organic-quinoa-16-oz"
   },
@@ -1307,7 +1307,7 @@
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.traderjoes.com/home/search?q=quinoa&section=products"
   },
@@ -1324,7 +1324,7 @@
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.aldi.us/store/aldi/products/18647728-millville-hearty-100-whole-grain-old-fashioned-rolled-oats-42-oz"
   },
@@ -1392,7 +1392,7 @@
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.aldi.us/store/aldi/products/29053943-reggano-penne-rigate-16-oz"
   },
@@ -1460,7 +1460,7 @@
    "count_per_package": 8,
    "count_noun": "tortilla",
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.aldi.us/store/aldi/products/19648124-pueblo-lindo-burrito-flour-tortillas-8-ct"
   },
@@ -1528,7 +1528,7 @@
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.aldi.us/store/aldi/products/20114923-l-oven-fresh-100-whole-wheat-bread-20-oz"
   },
@@ -1596,7 +1596,7 @@
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.aldi.us/store/aldi/products/16354928-cal-ore-produce-best-available-russet-potatoes-5lb-bag-5-lb"
   },
@@ -1688,19 +1688,19 @@
   {
    "item_id": "sweet_potato",
    "store": "Meijer",
-   "product": "Meijer Sweet potatoes, loose",
+   "product": "Meijer Bulk Sweet Potatoes (ad, per lb)",
    "package_size": "per lb",
    "package_grams": 453.6,
-   "price": 1.19,
-   "unit_price": 1.19,
+   "price": 0.49,
+   "unit_price": 0.49,
    "unit": "per lb",
    "package_noun": "lb",
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-10-18",
-   "estimated": true,
-   "source_url": "https://www.meijer.com/"
+   "last_updated": "2026-11-20",
+   "estimated": false,
+   "source_url": "https://flipp.com/en-us/item/1054908075"
   },
   {
    "item_id": "sweet_potato",
@@ -1732,7 +1732,7 @@
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.aldi.us/store/aldi/products/26548777-season-s-choice-steamable-frozen-broccoli-florets-12-oz"
   },
@@ -1800,7 +1800,7 @@
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.aldi.us/store/aldi/products/19793641-season-s-choice-steamed-mixed-vegetables-12-oz"
   },
@@ -1868,7 +1868,7 @@
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.aldi.us/store/aldi/products/19914212-season-s-choice-steamed-cut-green-beans-12-oz"
   },
@@ -1936,7 +1936,7 @@
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.aldi.us/store/aldi/products/21001771-season-s-choice-berry-medley-32-oz"
   },
@@ -2004,7 +2004,7 @@
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.aldi.us/store/aldi/products/20041343-little-salad-bar-spinach-8-oz"
   },
@@ -2055,7 +2055,7 @@
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.traderjoes.com/home/products/pdp/organic-baby-spinach-032603"
   },
@@ -2072,7 +2072,7 @@
    "count_per_package": 3,
    "count_noun": "pepper",
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.aldi.us/store/aldi/products/64392816-mixed-bell-peppers"
   },
@@ -2140,7 +2140,7 @@
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.aldi.us/store/aldi/products/16507392-yellow-onion-bag-3-lbs"
   },
@@ -2208,7 +2208,7 @@
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.aldi.us/store/aldi/products/17837662-carrot-2-lbs"
   },
@@ -2276,7 +2276,7 @@
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.aldi.us/store/aldi/products/16355017-monterey-white-mushrooms-sliced-8-oz"
   },
@@ -2344,7 +2344,7 @@
    "count_per_package": 3,
    "count_noun": "head",
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.aldi.us/store/aldi/products/17819978-garlic-3-ct"
   },
@@ -2412,7 +2412,7 @@
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.aldi.us/store/aldi/products/25720157-bananas-per-lb"
   },
@@ -2463,7 +2463,7 @@
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.traderjoes.com/home/products/pdp/bananas-048053"
   },
@@ -2473,14 +2473,14 @@
    "product": "Aldi Gala apples",
    "package_size": "3 lb",
    "package_grams": 1361,
-   "price": 1.99,
-   "unit_price": 0.663,
+   "price": 2.39,
+   "unit_price": 0.796,
    "unit": "per lb",
    "package_noun": "bag",
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.aldi.us/store/aldi/products/3253915-gala-apple-bag-3-lbs"
   },
@@ -2548,7 +2548,7 @@
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.aldi.us/store/aldi/products/18648474-peanut-delight-peanut-butter-18-oz"
   },
@@ -2599,7 +2599,7 @@
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.traderjoes.com/home/search?q=peanut%20butter&section=products"
   },
@@ -2616,7 +2616,7 @@
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.aldi.us/store/aldi/products/18647803-southern-grove-unsalted-almonds-14-oz"
   },
@@ -2684,7 +2684,7 @@
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.aldi.us/store/aldi/products/36517317-priano-extra-virgin-olive-oil-16-9-fl-oz"
   },
@@ -2735,7 +2735,7 @@
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.traderjoes.com/home/products/pdp/extra-virgin-olive-oil-liter-001465"
   },
@@ -2752,7 +2752,7 @@
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.aldi.us/store/aldi/products/19763196-casa-mamita-medium-salsa-24-oz"
   },
@@ -2820,7 +2820,7 @@
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.aldi.us/store/aldi/products/18649702-reggano-marinara-pasta-sauce-24-oz"
   },
@@ -2871,7 +2871,7 @@
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.traderjoes.com/home/search?q=marinara&section=products"
   },
@@ -2888,7 +2888,7 @@
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.aldi.us/store/aldi/products/18648732-happy-harvest-crushed-tomatoes-28-oz"
   },
@@ -2956,7 +2956,7 @@
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.aldi.us/store/aldi/products/18649296-fusia-asian-inspirations-traditionally-brewed-all-purpose-soy-sauce-15-fl-oz"
   },
@@ -3024,7 +3024,7 @@
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.aldi.us/store/aldi/products/20197919-berryhill-100-natural-clover-honey-24-oz"
   },
@@ -3075,7 +3075,7 @@
    "count_per_package": null,
    "count_noun": null,
    "aisle": null,
-   "last_updated": "2026-11-13",
+   "last_updated": "2026-11-20",
    "estimated": false,
    "source_url": "https://www.traderjoes.com/home/search?q=honey&section=products"
   }
